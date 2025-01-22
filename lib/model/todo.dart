@@ -13,6 +13,7 @@ class Todo{
       Todo(id:'01' ,todoText:'Morning Exercise',isDone:true),
       Todo(id:'02' ,todoText:'Buy Groceries',isDone:true),
       Todo(id:'03' ,todoText:'Check Emails',isDone:false),
+      Todo(id:'04' ,todoText:'Check Emails',isDone:false),
 
     ];
   }
