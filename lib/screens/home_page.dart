@@ -3,8 +3,14 @@ import '../model/todo.dart';
 import '../widgets/todo_item.dart';
 import '../constants/colors.dart';
 
-class homePage extends StatelessWidget {
+class homePage extends StatefulWidget {
+  @override
+  State<homePage> createState() => _homePageState();
+}
+
+class _homePageState extends State<homePage> {
   final todoList = Todo.todoList();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +39,12 @@ class homePage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      for (Todo todoo in todoList) TodoItem(todo: todoo),
+                      for (Todo todoo in todoList)
+                        TodoItem(
+                          todo: todoo,
+                          onTodoChanged: _handleToDoChange,
+                          onDeleteItem: _deleteTodoItem,
+                        ),
                     ],
                   ),
                 )
@@ -93,6 +104,19 @@ class homePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  ///   this state continuously changes whenever the item is tapped
+  void _handleToDoChange(Todo todo) {
+    setState(() {
+      todo.isDone = !todo.isDone;
+    });
+  }
+  void _deleteTodoItem(String id){
+    setState(() {
+      todoList.removeWhere((item) => item.id == id);
+    });
+
   }
 
   Widget searchBox() {
