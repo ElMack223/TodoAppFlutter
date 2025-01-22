@@ -10,6 +10,14 @@ class homePage extends StatefulWidget {
 
 class _homePageState extends State<homePage> {
   final todoList = Todo.todoList();
+  final _todoController = TextEditingController();
+  List<Todo> _foundTodo = [];
+
+  @override
+  void initState() {
+    _foundTodo = todoList;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +47,7 @@ class _homePageState extends State<homePage> {
                           ),
                         ),
                       ),
-                      for (Todo todoo in todoList)
+                      for (Todo todoo in _foundTodo.reversed) // add reversed
                         TodoItem(
                           todo: todoo,
                           onTodoChanged: _handleToDoChange,
@@ -75,6 +83,7 @@ class _homePageState extends State<homePage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
+                    controller: _todoController,
                     decoration: InputDecoration(
                         hintText: 'add a new todo item',
                         border: InputBorder.none),
@@ -91,7 +100,9 @@ class _homePageState extends State<homePage> {
                       color: Colors.white,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    _addTodoItem(_todoController.text); //text field is pressed
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: tdBlue,
                     minimumSize: Size(60, 60),
@@ -112,11 +123,36 @@ class _homePageState extends State<homePage> {
       todo.isDone = !todo.isDone;
     });
   }
-  void _deleteTodoItem(String id){
+
+  void _runFilter(String enteredKeyword) {
+    List<Todo> results = [];
+    if (enteredKeyword.isEmpty) {
+      results = todoList;
+    } else {
+      results = todoList
+          .where((item) => item.todoText!
+              .toLowerCase()
+              .contains(enteredKeyword.toLowerCase()))
+          .toList();
+    }
+    setState(() {
+      _foundTodo = results;
+    });
+  }
+
+  void _deleteTodoItem(String id) {
     setState(() {
       todoList.removeWhere((item) => item.id == id);
     });
+  }
 
+  void _addTodoItem(String toDo) {
+    setState(() {
+      todoList.add(Todo(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          todoText: toDo));
+    });
+    _todoController.clear();
   }
 
   Widget searchBox() {
@@ -125,6 +161,7 @@ class _homePageState extends State<homePage> {
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(20)),
       child: TextField(
+        onChanged: (value) => _runFilter(value),
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(0),
             prefixIcon: Icon(
